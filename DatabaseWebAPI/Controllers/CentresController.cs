@@ -17,9 +17,17 @@ namespace DatabaseWebAPI.Controllers
         private bookingsdbEntities db = new bookingsdbEntities();
 
         // GET: api/Centres
-        public IQueryable<Centre> GetCentres()
+        public List<Centre> GetCentres()
         {
-            return db.Centres;
+            List<Centre> cen = new List<Centre>();
+            if (db.Centres != null)
+            {
+                foreach (Centre item in db.Centres)
+                {
+                    cen.Add(item);
+                }
+            }
+            return cen;
         }
 
         // GET: api/Centres/5

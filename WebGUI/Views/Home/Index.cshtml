@@ -2,6 +2,124 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    @using WebGUI.Models;
+    @model List<Booking>;
 }
+<div id="tableview">
+    <table>
 
-<h1> You are in the body of index</h1>
+        @foreach(var data in Model)
+        {
+            <tr>
+                <td>@data.Id</td>
+                <td>@data.FirstName</td>
+                <td>@data.LastName</td>
+                <td>@data.CentreId</td>
+                <td>@data.StartDate</td>
+                <td>@data.FinishDate</td>
+                <td>@data.EventName</td>
+            </tr>
+        }
+    </table>
+</div>
+
+<div id="studentForm">
+    
+    <form>
+      <input type="text" id="Id" name="Id" placeholder="ID" />
+      <input type="text" id="CName" name="CName" placeholder="Centre Name" />
+    </form>
+    <button id="insert" onclick="getNextDate()">Insert</button>
+</div>
+
+<div id="studentForm">
+    
+    <form>
+      <input type="text" id="Id" name="Id" placeholder="ID" />
+      <input type="text" id="FirstName" name="FirstName" placeholder="First Name" />
+      <input type="text" id="LastName" name="LastName" placeholder="Last Name" />
+      <input type="text" id="CentreID" name="CentreID" placeholder="CentreID" />
+      <input type="datetime" id="StartDate" name="StartDate" placeholder="Start Date" />
+      <input type="datetime" id="FinishDate" name="FinishDate" placeholder="Finish Date" />
+      <input type="text" id="EventName" name="EventName" placeholder="Event Name" />
+    </form>
+    <button id="insert" onclick="addBooking()">Add</button>
+</div>
+<script>
+    function insert()
+    {
+        $.ajax({
+            type: 'POST',
+            url: '/home/insertcentre/?username=admin&password=adminpass',
+            contentType: 'application/json',
+            data: JSON.stringify(
+            {
+                "Id": $('#Id').val(),
+                "CentreName": $("#CName").val()
+            }),
+            success: function(data, textStatus, jQxhr)
+            {
+                alert("Data Inserted");
+            },
+            error: function(xhr, textStatus, error)
+            {
+                alert("Error");
+                console.log(xhr.statusText);
+                console.log(textStatus);
+                console.log(error);
+            }
+        });
+    }
+
+    function addBooking()
+    {
+        var index;
+        index = @Model.Count() + 1;
+        $.ajax({
+            type: 'POST',
+            url: '/home/insertbooking/',
+            contentType: 'application/json',
+            data: JSON.stringify(
+            {
+                "Id": index,
+                "FirstName": $('#FirstName').val(),
+                "LastName": $('#LastName').val(),
+                "CentreID": $('#CentreID').val(),
+                "StartDate": $('#StartDate').val(),
+                "FinishDate": $('#FinishDate').val(),
+                "EventName": $("#EventName").val()
+            }),
+            success: function(data, textStatus, jQxhr)
+            {
+                alert("Data Inserted");
+            },
+            error: function(xhr, textStatus, error)
+            {
+                alert("Error");
+                console.log(xhr.statusText);
+                console.log(textStatus);
+                console.log(error);
+            }
+        });
+    }
+
+    function getNextDate()
+    {
+        $.ajax({
+            url: '/home/getnextdate/1',
+            type: 'get',
+            contentType: 'application/json',
+            processData: false,
+            success: function (data, textStatus, jQxhr) 
+            {
+                var obj = JSON.parse(data);
+                $("#SName").val(obj.Name);
+                $("#SUni").val(obj.University);
+            },
+            error: function (jqXhr, textStatus, errorThrown) 
+            {
+                console.log(errorThrown);
+            } 
+        });
+    }
+</script>
