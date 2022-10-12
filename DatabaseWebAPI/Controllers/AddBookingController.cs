@@ -32,6 +32,8 @@ namespace DatabaseWebAPI.Controllers
                     {
                         if (bookingData.StartDate > item.StartDate && bookingData.StartDate > item.FinishDate)
                         {
+                            int index = bookingsList.Count + 1;
+                            bookingData.Id = index;
                             RestRequest restRequest = new RestRequest("api/bookings/", Method.Post);
                             restRequest.AddJsonBody(JsonConvert.SerializeObject(bookingData));
                             RestResponse restResponse = restClient.Execute(restRequest);
@@ -50,6 +52,8 @@ namespace DatabaseWebAPI.Controllers
                         {
                             if (cen.Id.Equals(bookingData.CentreID))
                             {
+                                int index = bookingsList.Count + 1;
+                                bookingData.Id = index;
                                 RestRequest restRequest = new RestRequest("api/bookings/", Method.Post);
                                 restRequest.AddJsonBody(JsonConvert.SerializeObject(bookingData));
                                 RestResponse restResponse = restClient.Execute(restRequest);
@@ -66,6 +70,8 @@ namespace DatabaseWebAPI.Controllers
             }
             else
             {
+                int index = bookingsList.Count + 1;
+                bookingData.Id = index;
                 RestRequest restRequest = new RestRequest("api/bookings/", Method.Post);
                 restRequest.AddJsonBody(JsonConvert.SerializeObject(bookingData));
                 RestResponse restResponse = restClient.Execute(restRequest);

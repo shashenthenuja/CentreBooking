@@ -23,19 +23,18 @@
     </table>
 </div>
 
-<div id="studentForm">
+<div id="studentForm" class="admin">
     
     <form>
       <input type="text" id="Id" name="Id" placeholder="ID" />
       <input type="text" id="CName" name="CName" placeholder="Centre Name" />
     </form>
-    <button id="insert" onclick="getNextDate()">Insert</button>
+    <button id="insert" onclick="insertCentre()">Insert</button>
 </div>
 
-<div id="studentForm">
+<div id="studentForm" class="admin">
     
     <form>
-      <input type="text" id="Id" name="Id" placeholder="ID" />
       <input type="text" id="FirstName" name="FirstName" placeholder="First Name" required  />
       <input type="text" id="LastName" name="LastName" placeholder="Last Name" required  />
       <input type="text" id="CentreID" name="CentreID" placeholder="CentreID" required  />
@@ -48,11 +47,12 @@
     <button id="insert" onclick="addBooking()">Add</button>
 </div>
 <script>
-    function insert()
+    setText();
+    function insertCentre()
     {
         $.ajax({
             type: 'POST',
-            url: '/home/insertcentre/?username=admin&password=adminpass',
+            url: '/home/insertcentre/',
             contentType: 'application/json',
             data: JSON.stringify(
             {
@@ -76,7 +76,7 @@
     function addBooking()
     {
         var index;
-        index = @Model.Count() + 1;
+        index = 0;
         $.ajax({
             type: 'POST',
             url: '/home/insertbooking/',
@@ -106,10 +106,10 @@
         });
     }
 
-    function getNextDate()
+    function getNextDate(id)
     {
         $.ajax({
-            url: '/home/getnextdate/1',
+            url: '/home/getnextdate/' + id,
             type: 'POST',
             contentType: 'application/json',
             processData: false,
@@ -123,5 +123,110 @@
                 console.log(errorThrown);
             } 
         });
+    }
+
+    function showCentres() 
+    {
+        $.ajax({
+            url: '/home/getcentres/',
+            type: 'GET',
+            contentType: 'application/json',
+            data: JSON.stringify(json),
+            success: function (data, textStatus, jQxhr) 
+            {
+                for (var i in data){
+                    console.log(data[i].CentreID);
+                    console.log(data[i].CentreName);
+                }
+            },
+            error: function (jqXhr, textStatus, errorThrown) 
+            {
+                console.log(errorThrown);
+            } 
+        });
+    }
+
+    function loginFunc()
+    {
+        var login = JSON.parse(sessionStorage.getItem("login"));
+        if (login != null) {
+            if (login == false) {
+                var username = prompt('Username', '');
+                var password = prompt('Password', '');
+                console.log(username + " " + password);
+                if (username != null && password != null) {
+                    validateLogin(username, password);
+                }
+            } else if (login == true) {
+                sessionStorage.setItem("login", false)
+                alert("Logged Out");
+                $("#loginText").text('Login');
+                hideFuntions();
+            }
+        } else {
+            var username = prompt('Username', '');
+            var password = prompt('Password', '');
+            console.log(username + " " + password);
+            if (username != null && password != null) {
+                validateLogin(username, password);
+            }
+        }
+        
+        
+    }
+
+    function validateLogin(username, password)
+    { 
+        $.ajax({
+            type: 'POST',
+            url: '/home/login/?username=' + username + '&password=' + password,
+            contentType: 'application/json',
+            success: function(data, textStatus, jQxhr)
+            {
+                sessionStorage.setItem("login", true)
+                alert("Logged In as " + username);
+                $("#loginText").text('Logout');
+                hideFuntions();
+            },
+            error: function(xhr, textStatus, error)
+            {
+                alert("Invalid Login");
+            }
+        });
+    }
+
+    function hideFuntions() 
+    {
+        var login = JSON.parse(sessionStorage.getItem("login"));
+        if (login == true) {
+            var divs = document.getElementsByTagName('div');
+            for (var i = divs.length; i--;) {
+                var div = divs[i];
+                if (div.className === 'admin') {
+                    div.style.display = 'block';
+                }
+            }
+        } else {
+            var divs = document.getElementsByTagName('div');
+            for (var i = divs.length; i--;) {
+                var div = divs[i];
+                if (div.className === 'admin') {
+                    div.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    function setLoginText() {
+        var login = JSON.parse(sessionStorage.getItem("login"));
+        if (login == true) {
+            $("#loginText").text('Logout');
+        }
+    }
+
+    function setLoad() {
+        setLoginText();
+        hideFuntions();
+        showCentres();
     }
 </script>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using WebGUI.Models;
 
@@ -21,10 +22,10 @@ namespace WebGUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult InsertCentre([FromBody] Centre centreData, string username, string password)
+        public IActionResult InsertCentre([FromBody] Centre centreData)
         {
             RestClient restClient = new RestClient("http://localhost:50981/");
-            RestRequest restRequest = new RestRequest("api/addcentre/?username=" + username + "&password=" + password, Method.Post);
+            RestRequest restRequest = new RestRequest("api/addcentre/", Method.Post);
             // check username and password are correctly added to the url ************************<<<<<<<<<<<<<<<<<<<<<<<
             restRequest.AddJsonBody(JsonConvert.SerializeObject(centreData));
             RestResponse restResponse = restClient.Execute(restRequest);
@@ -83,6 +84,30 @@ namespace WebGUI.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        [HttpPost]
+        public IActionResult Login(string username, string password)
+        {
+            RestClient restClient = new RestClient("http://localhost:50981/");
+            RestRequest restRequest = new RestRequest("api/login/?username=" + username + "&password=" + password, Method.Post);
+            RestResponse restResponse = restClient.Execute(restRequest);
+            var data = (JObject)JsonConvert.DeserializeObject(restResponse.Content, new JsonSerializerSettings() { DateParseHandling = DateParseHandling.None });
+            var status = (string)data["Status"];
+            if (status.Equals("Success"))
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        public IActionResult GetCentres()
+        {
+            RestClient restClient = new RestClient("http://localhost:50981/");
+            RestRequest request = new RestRequest("api/getcentres/");
+            RestResponse resp = restClient.Get(request);
+            List<Centre> data = JsonConvert.DeserializeObject<List<Centre>>(resp.Content);
+            return Ok(data);
         }
     }
 }

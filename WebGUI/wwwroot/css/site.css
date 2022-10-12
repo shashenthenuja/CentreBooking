@@ -34,6 +34,10 @@ div#navigation li {
             background-color: #111111;
         }
 
+        div#navigation li a .login {
+            float: right;
+        }
+
 div#main {
     background-color: palegreen;
     height: auto;

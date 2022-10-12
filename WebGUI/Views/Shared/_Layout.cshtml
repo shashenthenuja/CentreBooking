@@ -5,13 +5,21 @@
         <link rel="stylesheet" href="~/css/site.css">
        
     </head>
-<body>
+<body onload="setLoad()">
     <div id="header">
        
     </div>
     <div id="navigation">
         <ul>
             <li> <a href="/Home">Home</a></></li>
+            @*<div class="login-container">
+                <form>
+                  <input type="text" placeholder="Username" name="username">
+                  <input type="text" placeholder="Password" name="password">
+                  <button type="submit" onclick="loginFunc2()">Login</button>
+                </form>
+            </div>*@
+            <li> <a class="login" id="loginText" href="#" onclick="loginFunc();">Login</a></></li>
         </ul>
     </div>
     <div id="main">
