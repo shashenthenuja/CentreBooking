@@ -66,5 +66,23 @@ namespace WebGUI.Controllers
             RestResponse restResponse = restClient.Execute(restRequest);
             return Ok(restResponse.Content);
         }
+
+        [HttpPost]
+        public IActionResult ViewCentreBookings(int id)
+        {
+            RestClient restClient = new RestClient("http://localhost:50981/");
+            RestRequest restRequest = new RestRequest("api/addbooking/{id}", Method.Post);
+            restRequest.AddUrlSegment("id", id);
+            RestResponse restResponse = restClient.Execute(restRequest);
+            List<Booking> result = JsonConvert.DeserializeObject<List<Booking>>(restResponse.Content);
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

@@ -36,11 +36,13 @@
     
     <form>
       <input type="text" id="Id" name="Id" placeholder="ID" />
-      <input type="text" id="FirstName" name="FirstName" placeholder="First Name" />
-      <input type="text" id="LastName" name="LastName" placeholder="Last Name" />
-      <input type="text" id="CentreID" name="CentreID" placeholder="CentreID" />
-      <input type="datetime" id="StartDate" name="StartDate" placeholder="Start Date" />
-      <input type="datetime" id="FinishDate" name="FinishDate" placeholder="Finish Date" />
+      <input type="text" id="FirstName" name="FirstName" placeholder="First Name" required  />
+      <input type="text" id="LastName" name="LastName" placeholder="Last Name" required  />
+      <input type="text" id="CentreID" name="CentreID" placeholder="CentreID" required  />
+      <label for="StartDate">Start Date: </label>
+      <input type="date" id="StartDate" name="StartDate" required  />
+      <label for="FinishDate">Finish Date: </label>
+      <input type="date" id="FinishDate" name="FinishDate" required  />
       <input type="text" id="EventName" name="EventName" placeholder="Event Name" />
     </form>
     <button id="insert" onclick="addBooking()">Add</button>
@@ -92,6 +94,7 @@
             success: function(data, textStatus, jQxhr)
             {
                 alert("Data Inserted");
+                console.log($('#FinishDate').val());
             },
             error: function(xhr, textStatus, error)
             {
@@ -107,14 +110,13 @@
     {
         $.ajax({
             url: '/home/getnextdate/1',
-            type: 'get',
+            type: 'POST',
             contentType: 'application/json',
             processData: false,
             success: function (data, textStatus, jQxhr) 
             {
                 var obj = JSON.parse(data);
-                $("#SName").val(obj.Name);
-                $("#SUni").val(obj.University);
+                console.log(obj.StartDate);
             },
             error: function (jqXhr, textStatus, errorThrown) 
             {

@@ -10,10 +10,10 @@ using System.Web.Http;
 
 namespace DatabaseWebAPI.Controllers
 {
-    public class GetNextDateController : ApiController
+    public class ViewCentreBookingsController : ApiController
     {
         RestClient restClient = new RestClient("http://localhost:50981/");
-        public IHttpActionResult GetNextDate([FromUri] int id)
+        public IHttpActionResult ViewCentreBooking([FromUri] int id)
         {
             RestRequest centreRequest = new RestRequest("api/centres/", Method.Get);
             RestResponse centreResponse = restClient.Execute(centreRequest);
@@ -22,6 +22,8 @@ namespace DatabaseWebAPI.Controllers
             RestRequest bookingsRequest = new RestRequest("api/bookings/", Method.Get);
             RestResponse bookingsResponse = restClient.Execute(bookingsRequest);
             List<Booking> bookingsList = JsonConvert.DeserializeObject<List<Booking>>(bookingsResponse.Content);
+
+            List<Booking> result = new List<Booking>();
 
             if (bookingsList.Count > 0)
             {
@@ -33,14 +35,15 @@ namespace DatabaseWebAPI.Controllers
                         {
                             if (book.CentreID.Equals(id))
                             {
-                                DateTime latestDate = bookingsList.Max(r => r.FinishDate);
-                                Booking newBooking = new Booking();
-                                newBooking.StartDate = latestDate;
-                                return Json(newBooking);
+                                result.Add(book);
                             }
                         }
                     }
                 }
+            }
+            if (result.Count > 0)
+            {
+                return Json(result);
             }
             return StatusCode(HttpStatusCode.NoContent);
         }
