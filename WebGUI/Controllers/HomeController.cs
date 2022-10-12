@@ -101,12 +101,13 @@ namespace WebGUI.Controllers
             return BadRequest();
         }
 
+        [HttpPost]
         public IActionResult GetCentres()
         {
             RestClient restClient = new RestClient("http://localhost:50981/");
-            RestRequest request = new RestRequest("api/getcentres/");
-            RestResponse resp = restClient.Get(request);
-            List<Centre> data = JsonConvert.DeserializeObject<List<Centre>>(resp.Content);
+            RestRequest request = new RestRequest("api/getcentres/", Method.Post);
+            RestResponse restResponse = restClient.Execute(request);
+            List<Centre> data = JsonConvert.DeserializeObject<List<Centre>>(restResponse.Content);
             return Ok(data);
         }
     }
