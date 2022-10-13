@@ -147,8 +147,6 @@
             success: function (data) {
             $("#table tr").remove(); 
             $.each(data, function (i, centre) {
-                console.log(centre.id);
-                console.log(centre.centreName);
                 var rows = "<tr>" +
                         "<td>" + centre.id + "</td>" +
                         "<td>" + centre.centreName+ "</td>" +
@@ -198,7 +196,6 @@
             success: function (data) {
             $("#bookings tr").remove();
             $.each(data, function (i, data) {
-                console.log(data);
                 var rows = "<tr>" +
                     "<td>" + data.id + "</td>" +
                     "<td>" + data.firstName + "</td>" +
@@ -262,7 +259,6 @@
         } else {
             var username = prompt('Username', '');
             var password = prompt('Password', '');
-            console.log(username + " " + password);
             if (username != null && password != null) {
                 validateLogin(username, password);
             }
