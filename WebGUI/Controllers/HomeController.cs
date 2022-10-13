@@ -105,11 +105,26 @@ namespace WebGUI.Controllers
             RestRequest request = new RestRequest("api/getcentres/", Method.Get);
             RestResponse restResponse = restClient.Execute(request);
             List<Centre> data = JsonConvert.DeserializeObject<List<Centre>>(restResponse.Content);
-            foreach (Centre item in data)
-            {
-                Console.WriteLine(item.Id + item.CentreName);
-            }
             return Ok(data);
+        }
+
+        [HttpPost]
+        public IActionResult GetBookings(int id)
+        {
+            RestClient restClient = new RestClient("http://localhost:50981/");
+            RestRequest request = new RestRequest("api/bookings/");
+            RestResponse resp = restClient.Get(request);
+            List<Booking> data = JsonConvert.DeserializeObject<List<Booking>>(resp.Content);
+
+            List<Booking> result = new List<Booking>();
+            foreach (Booking item in data)
+            {
+                if (item.CentreId.Equals(id))
+                {
+                    result.Add(item);
+                }
+            }
+            return Ok(result);
         }
 
         [HttpPost]
@@ -133,7 +148,7 @@ namespace WebGUI.Controllers
 
             if (centre != null)
             {
-                return Ok(centre);
+                return Ok(centre.CentreName);
             }
             return BadRequest();
         }

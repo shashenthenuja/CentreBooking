@@ -6,59 +6,64 @@
     @model List<Booking>;
 }
 <div id="tableview">
-    <table>
-
-        @foreach(var data in Model)
-        {
-            <tr>
-                <td>@data.Id</td>
-                <td>@data.FirstName</td>
-                <td>@data.LastName</td>
-                <td>@data.CentreId</td>
-                <td>@data.StartDate</td>
-                <td>@data.FinishDate</td>
-                <td>@data.EventName</td>
-            </tr>
-        }
+    <table id="table">
     </table>
 </div>
 
-<div id="studentForm">
+<div id="tableview" class="admin">
+    <table id="bookings">
+    </table>
+</div>
+
+<div id="studentForm" class="user">
     
     <form>
-      <input type="text" id="Id" name="Id" placeholder="ID" />
-      <input type="text" id="CName" name="CName" placeholder="Centre Name" />
+      <input type="text" id="FirstName" name="FirstName" placeholder="First Name" required  />
+      <input type="text" id="LastName" name="LastName" placeholder="Last Name" required  />
+      <select id="centreDrop1" >  
+      <option value="1">Select Centre</option>  
+      </select>
+      <input type="date" id="StartDate" name="StartDate" required  />
+      <input type="date" id="FinishDate" name="FinishDate" required  />
+      <input type="text" id="EventName" name="EventName" placeholder="Event Name" />
     </form>
-    <button id="insert" onclick="getNextDate()">Insert</button>
+    <br />
+    <button id="bookCentre" onclick="addBooking()">Book Centre</button>
+    <button id="showCentres" onclick="showCentres()">Show Centres</button>
+    <button id="getNext" onclick="getNextDate()">Get Next Date</button>
+</div>
+
+<div id="studentForm" class="user">
+    
+    <form>
+      <input type="text" id="searchCen" name="searchCen" placeholder="Search" required  />
+    </form>
+    <br />
+    <button id="search" onclick="searchCentre()">Search</button>
 </div>
 
 <div id="studentForm" class="admin">
     
     <form>
-      <input type="text" id="FirstName" name="FirstName" placeholder="First Name" required  />
-      <input type="text" id="LastName" name="LastName" placeholder="Last Name" required  />
-      <input type="text" id="CentreID" name="CentreID" placeholder="CentreID" required  />
-      <label for="StartDate">Start Date: </label>
-      <input type="date" id="StartDate" name="StartDate" required  />
-      <label for="FinishDate">Finish Date: </label>
-      <input type="date" id="FinishDate" name="FinishDate" required  />
-      <input type="text" id="EventName" name="EventName" placeholder="Event Name" />
+      <input type="text" id="CName" name="CName" placeholder="Centre Name" />
     </form>
-    <button id="insert" onclick="addBooking()">Add</button>
+    <button id="addCentre" onclick="insertCentre()">Add Centre</button>
+    <button id="showCentres" onclick="showCentres()">Show Centres</button>
 </div>
 
-<div id="studentForm">
+<div id="studentForm" class="admin">
     
     <form>
-      <input type="text" id="name" name="name" placeholder="Centre Name" />
-      <input type="text" id="CName" name="CName" placeholder="" />
+      <select id="centreDrop2" >  
+       <option value="1">Select Centre</option>  
+      </select> 
     </form>
-    <button id="search" onclick="searchCentre()">Search</button>
+    <button id="showBookings" onclick="getBookings()">Show Bookings</button>
 </div>
-
 
 <script>
     setText();
+    
     function insertCentre()
     {
         $.ajax({
@@ -67,7 +72,6 @@
             contentType: 'application/json',
             data: JSON.stringify(
             {
-                "Id": $('#Id').val(),
                 "CentreName": $("#CName").val()
             }),
             success: function(data, textStatus, jQxhr)
@@ -97,15 +101,14 @@
                 "Id": index,
                 "FirstName": $('#FirstName').val(),
                 "LastName": $('#LastName').val(),
-                "CentreID": $('#CentreID').val(),
+                "CentreID": $('#centreDrop1').val(),
                 "StartDate": $('#StartDate').val(),
                 "FinishDate": $('#FinishDate').val(),
                 "EventName": $("#EventName").val()
             }),
             success: function(data, textStatus, jQxhr)
             {
-                alert("Data Inserted");
-                console.log($('#FinishDate').val());
+                alert("Booking Added");
             },
             error: function(xhr, textStatus, error)
             {
@@ -119,14 +122,15 @@
 
     function getNextDate()
     {
+        var index = $('#centreDrop1').val();
         $.ajax({
-            url: '/home/getnextdate/1',
+            url: '/home/getnextdate/'+ index,
             type: 'GET',
             contentType: 'application/json',
             processData: false,
             success: function (data, textStatus, jQxhr) 
             {
-                console.log(data);
+                alert("Next Available Date For ID " + index + " : " + data)
             },
             error: function (jqXhr, textStatus, errorThrown) 
             {
@@ -141,9 +145,70 @@
             url: '/home/getcentres/',
             type: 'GET',
             success: function (data) {
+            $("#table tr").remove(); 
             $.each(data, function (i, centre) {
                 console.log(centre.id);
                 console.log(centre.centreName);
+                var rows = "<tr>" +
+                        "<td>" + centre.id + "</td>" +
+                        "<td>" + centre.centreName+ "</td>" +
+                        "</tr>";
+                        $('#table').append(rows);
+            });
+            
+            },
+            error: function(xhr, textStatus, error)
+            {
+                alert("Error");
+                console.log(xhr.statusText);
+                console.log(textStatus);
+                console.log(error);
+            }
+        });
+    }
+
+    function showBookings() 
+    {
+        $.ajax({
+            url: '/home/getcentres/',
+            type: 'GET',
+            success: function (data) {
+                var options = '';
+            $.each(data, function (i, centre) {
+                options += '<option value="' + centre.id + '">' + centre.centreName + '</option>';
+            });
+                $('#centreDrop1').append(options);  
+                $('#centreDrop2').append(options);
+            },
+            error: function(xhr, textStatus, error)
+            {
+                alert("Error");
+                console.log(xhr.statusText);
+                console.log(textStatus);
+                console.log(error);
+            }
+        });
+    }
+
+    function getBookings() {
+        var index = $('#centreDrop2').val();
+        $.ajax({
+            url: '/home/getbookings/' + index,
+            type: 'POST',
+            success: function (data) {
+            $("#bookings tr").remove();
+            $.each(data, function (i, data) {
+                console.log(data);
+                var rows = "<tr>" +
+                    "<td>" + data.id + "</td>" +
+                    "<td>" + data.firstName + "</td>" +
+                    "<td>" + data.lastName + "</td>" +
+                    "<td>" + data.centreId + "</td>" +
+                    "<td>" + data.startDate + "</td>" +
+                    "<td>" + data.finishDate + "</td>" +
+                    "<td>" + data.eventName + "</td>" +
+                    "</tr>";
+                $('#bookings').append(rows);
             });
             },
             error: function(xhr, textStatus, error)
@@ -159,15 +224,17 @@
     function searchCentre()
     {
         $.ajax({
-            url: '/home/getnextdate/?name=infi',
+            url: '/home/searchcentre/?name=' + $('#searchCen').val(),
             type: 'POST',
             contentType: 'application/json',
             processData: false,
             success: function (data, textStatus, jQxhr) 
             {
-                var obj = JSON.parse(data);
-                $("#CName").val(obj.CentreName);
-                console.log(obj.CentreName);
+                if (data != null) {
+                    alert("Centre Name : " + data);
+                } else {
+                    alert("Not Found!");
+                }
             },
             error: function (jqXhr, textStatus, errorThrown) 
             {
@@ -235,12 +302,28 @@
                     div.style.display = 'block';
                 }
             }
+
+            var divs2 = document.getElementsByTagName('div');
+            for (var i = divs2.length; i--;) {
+                var div2 = divs2[i];
+                if (div2.className === 'user') {
+                    div2.style.display = 'none';
+                }
+            }
         } else {
             var divs = document.getElementsByTagName('div');
             for (var i = divs.length; i--;) {
                 var div = divs[i];
                 if (div.className === 'admin') {
                     div.style.display = 'none';
+                }
+            }
+
+            var divs2 = document.getElementsByTagName('div');
+            for (var i = divs2.length; i--;) {
+                var div2 = divs2[i];
+                if (div2.className === 'user') {
+                    div2.style.display = 'block';
                 }
             }
         }
@@ -253,9 +336,16 @@
         }
     }
 
+    function setDate() {
+        var today = new Date().toISOString().slice(0, 10);
+        document.getElementById("StartDate").setAttribute("min", today);
+        document.getElementById("FinishDate").setAttribute("min", today);
+    }
+
     function setLoad() {
         setLoginText();
         hideFuntions();
-        showCentres();
+        showBookings();
+        setDate();
     }
 </script>

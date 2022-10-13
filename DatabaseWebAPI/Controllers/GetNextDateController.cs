@@ -33,9 +33,8 @@ namespace DatabaseWebAPI.Controllers
                         {
                             if (book.CentreID.Equals(id))
                             {
-                                DateTime latestDate = bookingsList.Max(r => r.FinishDate);
-                                Booking newBooking = new Booking();
-                                newBooking.StartDate = latestDate;
+                                DateTime latestDate = bookingsList.Where(s => s.CentreID.Equals(id)).Max(r => r.FinishDate);
+                                latestDate = latestDate.AddDays(1);
                                 return Ok(latestDate.ToShortDateString());
                             }
                         }

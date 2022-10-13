@@ -198,6 +198,7 @@
     <Compile Include="Controllers\AddCentreController.cs" />
     <Compile Include="Controllers\BookingsController.cs" />
     <Compile Include="Controllers\CentresController.cs" />
+    <Compile Include="Controllers\GetBookingsController.cs" />
     <Compile Include="Controllers\GetCentresController.cs" />
     <Compile Include="Controllers\GetNextDateController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

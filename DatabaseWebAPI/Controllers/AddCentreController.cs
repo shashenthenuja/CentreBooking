@@ -15,7 +15,12 @@ namespace DatabaseWebAPI.Controllers
         RestClient restClient = new RestClient("http://localhost:50981/");
         public IHttpActionResult AddCentre([FromBody] Centre centreData)
         {
-            
+            RestRequest restRequest1 = new RestRequest("api/centres/", Method.Get);
+            RestResponse restResponse1 = restClient.Execute(restRequest1);
+            List<Centre> data = JsonConvert.DeserializeObject<List<Centre>>(restResponse1.Content);
+
+            int index = data.Count + 1;
+            centreData.Id = index;
             RestRequest restRequest = new RestRequest("api/centres", Method.Post);
             restRequest.AddJsonBody(JsonConvert.SerializeObject(centreData));
             RestResponse restResponse = restClient.Execute(restRequest);
