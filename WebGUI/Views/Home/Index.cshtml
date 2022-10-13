@@ -23,13 +23,13 @@
     </table>
 </div>
 
-<div id="studentForm" class="admin">
+<div id="studentForm">
     
     <form>
       <input type="text" id="Id" name="Id" placeholder="ID" />
       <input type="text" id="CName" name="CName" placeholder="Centre Name" />
     </form>
-    <button id="insert" onclick="insertCentre()">Insert</button>
+    <button id="insert" onclick="getNextDate()">Insert</button>
 </div>
 
 <div id="studentForm" class="admin">
@@ -46,6 +46,17 @@
     </form>
     <button id="insert" onclick="addBooking()">Add</button>
 </div>
+
+<div id="studentForm">
+    
+    <form>
+      <input type="text" id="name" name="name" placeholder="Centre Name" />
+      <input type="text" id="CName" name="CName" placeholder="" />
+    </form>
+    <button id="search" onclick="searchCentre()">Search</button>
+</div>
+
+
 <script>
     setText();
     function insertCentre()
@@ -106,17 +117,16 @@
         });
     }
 
-    function getNextDate(id)
+    function getNextDate()
     {
         $.ajax({
-            url: '/home/getnextdate/' + id,
-            type: 'POST',
+            url: '/home/getnextdate/1',
+            type: 'GET',
             contentType: 'application/json',
             processData: false,
             success: function (data, textStatus, jQxhr) 
             {
-                var obj = JSON.parse(data);
-                console.log(obj.StartDate);
+                console.log(data);
             },
             error: function (jqXhr, textStatus, errorThrown) 
             {
@@ -129,15 +139,35 @@
     {
         $.ajax({
             url: '/home/getcentres/',
+            type: 'GET',
+            success: function (data) {
+            $.each(data, function (i, centre) {
+                console.log(centre.id);
+                console.log(centre.centreName);
+            });
+            },
+            error: function(xhr, textStatus, error)
+            {
+                alert("Error");
+                console.log(xhr.statusText);
+                console.log(textStatus);
+                console.log(error);
+            }
+        });
+    }
+
+    function searchCentre()
+    {
+        $.ajax({
+            url: '/home/getnextdate/?name=infi',
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify(json),
+            processData: false,
             success: function (data, textStatus, jQxhr) 
             {
-                for (var i in data){
-                    console.log(data[i].CentreID);
-                    console.log(data[i].CentreName);
-                }
+                var obj = JSON.parse(data);
+                $("#CName").val(obj.CentreName);
+                console.log(obj.CentreName);
             },
             error: function (jqXhr, textStatus, errorThrown) 
             {
@@ -153,7 +183,6 @@
             if (login == false) {
                 var username = prompt('Username', '');
                 var password = prompt('Password', '');
-                console.log(username + " " + password);
                 if (username != null && password != null) {
                     validateLogin(username, password);
                 }

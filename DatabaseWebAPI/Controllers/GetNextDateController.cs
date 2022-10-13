@@ -36,7 +36,7 @@ namespace DatabaseWebAPI.Controllers
                                 DateTime latestDate = bookingsList.Max(r => r.FinishDate);
                                 Booking newBooking = new Booking();
                                 newBooking.StartDate = latestDate;
-                                return Json(newBooking);
+                                return Ok(latestDate.ToShortDateString());
                             }
                         }
                     }

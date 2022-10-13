@@ -18,11 +18,7 @@ namespace DatabaseWebAPI.Controllers
             RestRequest restRequest = new RestRequest("api/centres/", Method.Get);
             RestResponse restResponse = restClient.Execute(restRequest);
             List<Centre> result = JsonConvert.DeserializeObject<List<Centre>>(restResponse.Content);
-            if (result != null)
-            {
-                return Json(result);
-            }
-            return StatusCode(HttpStatusCode.NoContent);
+            return Json(result);
         }
     }
 }

@@ -26,7 +26,6 @@ namespace WebGUI.Controllers
         {
             RestClient restClient = new RestClient("http://localhost:50981/");
             RestRequest restRequest = new RestRequest("api/addcentre/", Method.Post);
-            // check username and password are correctly added to the url ************************<<<<<<<<<<<<<<<<<<<<<<<
             restRequest.AddJsonBody(JsonConvert.SerializeObject(centreData));
             RestResponse restResponse = restClient.Execute(restRequest);
             Centre result = JsonConvert.DeserializeObject<Centre>(restResponse.Content);
@@ -58,11 +57,10 @@ namespace WebGUI.Controllers
             }
         }
 
-        [HttpPost]
         public IActionResult GetNextDate(int id)
         {
             RestClient restClient = new RestClient("http://localhost:50981/");
-            RestRequest restRequest = new RestRequest("api/getnextdate/{id}", Method.Post);
+            RestRequest restRequest = new RestRequest("api/getnextdate/{id}", Method.Get);
             restRequest.AddUrlSegment("id", id);
             RestResponse restResponse = restClient.Execute(restRequest);
             return Ok(restResponse.Content);
@@ -72,7 +70,7 @@ namespace WebGUI.Controllers
         public IActionResult ViewCentreBookings(int id)
         {
             RestClient restClient = new RestClient("http://localhost:50981/");
-            RestRequest restRequest = new RestRequest("api/addbooking/{id}", Method.Post);
+            RestRequest restRequest = new RestRequest("api/viewcentrebookings/{id}", Method.Post);
             restRequest.AddUrlSegment("id", id);
             RestResponse restResponse = restClient.Execute(restRequest);
             List<Booking> result = JsonConvert.DeserializeObject<List<Booking>>(restResponse.Content);
@@ -101,14 +99,43 @@ namespace WebGUI.Controllers
             return BadRequest();
         }
 
-        [HttpPost]
         public IActionResult GetCentres()
         {
             RestClient restClient = new RestClient("http://localhost:50981/");
-            RestRequest request = new RestRequest("api/getcentres/", Method.Post);
+            RestRequest request = new RestRequest("api/getcentres/", Method.Get);
             RestResponse restResponse = restClient.Execute(request);
             List<Centre> data = JsonConvert.DeserializeObject<List<Centre>>(restResponse.Content);
+            foreach (Centre item in data)
+            {
+                Console.WriteLine(item.Id + item.CentreName);
+            }
             return Ok(data);
+        }
+
+        [HttpPost]
+        public IActionResult SearchCentre(string name)
+        {
+            RestClient restClient = new RestClient("http://localhost:50981/");
+            RestRequest request = new RestRequest("api/getcentres/", Method.Get);
+            RestResponse restResponse = restClient.Execute(request);
+            List<Centre> data = JsonConvert.DeserializeObject<List<Centre>>(restResponse.Content);
+
+            Centre centre = new Centre();
+
+            foreach (Centre item in data)
+            {
+                if (item.CentreName.ToLower().Contains(name))
+                {
+                    centre = item;
+                    break;
+                }
+            }
+
+            if (centre != null)
+            {
+                return Ok(centre);
+            }
+            return BadRequest();
         }
     }
 }
